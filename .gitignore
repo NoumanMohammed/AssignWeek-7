@@ -1,0 +1,12 @@
+__pycache__/
+*.pyc
+*.pyo
+.env
+venv/
+*.ply
+data/nerf_images/
+*.png
+!sample_views.png
+!training_loss.png
+!point_cloud_3d.png
+!evaluation_metrics.png

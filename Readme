@@ -1,0 +1,24 @@
+# NeRF 3D Scene Reconstruction
+
+Neural Radiance Fields (NeRF) implementation for 3D scene reconstruction from 2D images.
+
+## How to Run
+
+```bash
+# 1. Install dependencies
+pip install -r requirements.txt
+
+# 2. (Optional) Add your own images to data/nerf_images/
+#    Otherwise synthetic images are used automatically.
+
+# 3. Run
+python nerf_reconstruction.py
+```
+
+## Outputs
+| File | Description |
+|------|-------------|
+| `sample_views.png` | Input viewpoint images |
+| `training_loss.png` | Loss curve over training epochs |
+| `point_cloud_3d.png` | 3D point cloud coloured by density |
+| `evaluation_metrics.png` | PSNR & SSIM bar charts |
