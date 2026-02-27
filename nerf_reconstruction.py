@@ -85,3 +85,43 @@ class NeRF(nn.Module):
 
 model = NeRF()
 print(f"\nNeRF Model:\n{model}")
+
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# STEP 5: Train NeRF Model
+# Commit message: "Trained NeRF model on synthetic dataset"
+# ─────────────────────────────────────────────────────────────────────────────
+criterion = nn.MSELoss()
+optimizer = optim.Adam(model.parameters(), lr=0.001)
+
+# Synthetic training data: random 3D points and their expected colour+density
+num_samples = 1000
+train_data   = torch.rand(num_samples, 3) * 2 - 1   # 3D coords in [-1, 1]
+train_labels = torch.rand(num_samples, 4)             # random RGB + density
+
+epochs = 50
+loss_history = []
+
+print("\nTraining NeRF model...")
+for epoch in range(epochs):
+    optimizer.zero_grad()
+    outputs = model(train_data)
+    loss = criterion(outputs, train_labels)
+    loss.backward()
+    optimizer.step()
+    loss_history.append(loss.item())
+    if (epoch + 1) % 10 == 0:
+        print(f"  Epoch {epoch+1}/{epochs}  Loss: {loss.item():.4f}")
+
+# ── Output 1: Training Loss Curve ──────────────────────────────────────────
+plt.figure(figsize=(7, 4))
+plt.plot(range(1, epochs + 1), loss_history, color="steelblue", linewidth=2)
+plt.xlabel("Epoch")
+plt.ylabel("MSE Loss")
+plt.title("NeRF Training Loss Curve")
+plt.grid(True, alpha=0.4)
+plt.tight_layout()
+plt.savefig("training_loss.png", dpi=120)
+plt.close()
+print("\nSaved: training_loss.png")
