@@ -125,3 +125,41 @@ plt.tight_layout()
 plt.savefig("training_loss.png", dpi=120)
 plt.close()
 print("\nSaved: training_loss.png")
+
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# STEP 6: Synthesize Novel Views and Visualize 3D Scene
+# Commit message: "Synthesized novel views from NeRF and visualized 3D point cloud"
+# ─────────────────────────────────────────────────────────────────────────────
+test_points = torch.rand(1000, 3) * 2 - 1
+with torch.no_grad():
+    predicted_values = model(test_points).numpy()
+
+rgb    = predicted_values[:, :3]   # colour per point
+density = predicted_values[:, 3]   # opacity per point
+
+# ── Output 2: 3D Point Cloud (matplotlib 3D scatter, colour-coded by density) ─
+fig = plt.figure(figsize=(7, 6))
+ax  = fig.add_subplot(111, projection='3d')
+pts = test_points.numpy()
+sc  = ax.scatter(pts[:, 0], pts[:, 1], pts[:, 2],
+                 c=density, cmap='plasma', s=5, alpha=0.7)
+plt.colorbar(sc, ax=ax, label="Density")
+ax.set_title("NeRF 3D Point Cloud (Density)")
+ax.set_xlabel("X"); ax.set_ylabel("Y"); ax.set_zlabel("Z")
+plt.tight_layout()
+plt.savefig("point_cloud_3d.png", dpi=120)
+plt.close()
+print("Saved: point_cloud_3d.png")
+
+# Optional: save Open3D point cloud if the library is installed
+try:
+    import open3d as o3d
+    pc = o3d.geometry.PointCloud()
+    pc.points  = o3d.utility.Vector3dVector(pts)
+    pc.colors  = o3d.utility.Vector3dVector(rgb)
+    o3d.io.write_point_cloud("scene_pointcloud.ply", pc)
+    print("Saved: scene_pointcloud.ply  (Open3D)")
+except ImportError:
+    print("open3d not installed – skipping .ply export.")
