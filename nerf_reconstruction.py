@@ -57,3 +57,31 @@ plt.tight_layout()
 plt.savefig("sample_views.png", dpi=120)
 plt.close()
 print("Saved: sample_views.png")
+
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# STEP 4: Implement NeRF Model
+# Commit message: "Implemented NeRF model for 3D shape reconstruction"
+# ─────────────────────────────────────────────────────────────────────────────
+import torch
+import torch.nn as nn
+import torch.optim as optim
+
+class NeRF(nn.Module):
+    """Simple NeRF network: takes 3D position (x,y,z), outputs RGB + density."""
+    def __init__(self):
+        super(NeRF, self).__init__()
+        self.fc1 = nn.Linear(3, 128)
+        self.fc2 = nn.Linear(128, 128)
+        self.fc3 = nn.Linear(128, 4)  # 3 RGB channels + 1 density value
+        self.relu = nn.ReLU()
+
+    def forward(self, x):
+        x = self.relu(self.fc1(x))
+        x = self.relu(self.fc2(x))
+        x = torch.sigmoid(self.fc3(x))  # Keep outputs in [0, 1]
+        return x
+
+model = NeRF()
+print(f"\nNeRF Model:\n{model}")
