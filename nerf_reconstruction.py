@@ -1,0 +1,59 @@
+# =============================================================================
+# Week 7 Assignment: Neural Radiance Fields (NeRF) for 3D Scene Reconstruction
+# =============================================================================
+
+# ─────────────────────────────────────────────────────────────────────────────
+# STEP 3: Load and Preprocess 2D Images for 3D Reconstruction
+# Commit message: "Loaded and preprocessed 2D images for NeRF"
+# ─────────────────────────────────────────────────────────────────────────────
+import os
+import numpy as np
+import matplotlib
+matplotlib.use('Agg')   # non-interactive backend (saves files instead of showing windows)
+import matplotlib.pyplot as plt
+
+# Generate synthetic images when no real dataset exists (for demo purposes)
+def generate_synthetic_images(n=8, size=64):
+    """Create simple synthetic viewpoint images for testing."""
+    images = []
+    for i in range(n):
+        angle = i * (360 / n)
+        img = np.zeros((size, size, 3))
+        cx, cy = size // 2, size // 2
+        r = int(size * 0.3)
+        for y in range(size):
+            for x in range(size):
+                dx, dy = x - cx, y - cy
+                if dx**2 + dy**2 < r**2:
+                    img[y, x] = [
+                        0.5 + 0.5 * np.sin(np.radians(angle)),
+                        0.5 + 0.5 * np.cos(np.radians(angle)),
+                        0.8
+                    ]
+        images.append(img)
+    return images
+
+dataset_path = "./data/nerf_images"
+
+# Load real images if available, otherwise use synthetic ones
+if os.path.exists(dataset_path) and len(os.listdir(dataset_path)) > 0:
+    import imageio
+    filenames = sorted(os.listdir(dataset_path))
+    images = [imageio.imread(os.path.join(dataset_path, f)) for f in filenames]
+    processed_images = [img / 255.0 for img in images]
+    print(f"Loaded {len(processed_images)} real images.")
+else:
+    processed_images = generate_synthetic_images()
+    print(f"No dataset found. Using {len(processed_images)} synthetic images.")
+
+# Save a preview of loaded images
+fig, axes = plt.subplots(1, min(4, len(processed_images)), figsize=(12, 3))
+for i, img in enumerate(processed_images[:4]):
+    axes[i].imshow(img)
+    axes[i].set_title(f"View {i+1}")
+    axes[i].axis("off")
+plt.suptitle("Sample Input Views")
+plt.tight_layout()
+plt.savefig("sample_views.png", dpi=120)
+plt.close()
+print("Saved: sample_views.png")
